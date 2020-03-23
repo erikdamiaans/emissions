@@ -19,17 +19,12 @@ public class ApplicationUserRepoImplTest {
     @Autowired
     private ApplicationUserRepo applicationUserRepo;
 
-    @Before
-    public void setUp() throws Exception {
-
-
-    }
-
     @Test
     public void getUserOk() {
         ApplicationUser ester = this.applicationUserRepo.findByUserName("ester");
         Assert.assertNotNull(ester);
     }
+
     @TestConfiguration
     @Import(ApplicationUserRepoImpl.class)
     static class TestConfig{

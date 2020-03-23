@@ -9,6 +9,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Repository;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,13 +25,13 @@ public class ApplicationUserRepoImpl implements ApplicationUserRepo {
     public ApplicationUserRepoImpl(@Value("${user.db.location}") String userDbFilePath) throws IOException {
         loadUsers(userDbFilePath);
     }
-
-    private void loadUsers(String userDbFilePath) throws IOException {
-        repo = Arrays.stream(new ObjectMapper()
-                .readValue(((Resource) new ClassPathResource(userDbFilePath)).getFile(), ApplicationUser[].class))
+private void loadUsers(String userDb) throws  IOException{
+    try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(userDb)) {
+        repo = Arrays.stream(new ObjectMapper().readValue(inputStream, ApplicationUser[].class))
                 .collect(Collectors.toMap(ApplicationUser::getUserName, Function.identity()));
-
     }
+}
+
 
     @Override
     public ApplicationUser findByUserName(String userName) {
