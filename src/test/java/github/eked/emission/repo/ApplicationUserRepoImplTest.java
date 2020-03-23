@@ -14,7 +14,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = ApplicationUserRepoImplTest.TestConfig.class)
-@TestPropertySource(properties = {"user.db.location=db/users.json"})
+@TestPropertySource(properties = {"user.db.location=users.json"})
 public class ApplicationUserRepoImplTest {
     @Autowired
     private ApplicationUserRepo applicationUserRepo;
