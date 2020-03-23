@@ -9,7 +9,7 @@
     </parent>
     <groupId>github.eked</groupId>
     <artifactId>emission</artifactId>
-    <version>0.0.2</version>
+    <version>0.0.3-SNAPSHOT</version>
     <name>emission</name>
     <description>Microservice for querying emissions data</description>
 
@@ -19,7 +19,7 @@
     </properties>
     <scm>
         <developerConnection>scm:git:https://erikdamiaans:Waaromzegthijdatmijnpaswoordtezwakis1@github.com/erikdamiaans/emissions.git</developerConnection>
-    <tag>emission-0.0.2</tag>
+    <tag>HEAD</tag>
   </scm>
     <dependencies>
         <dependency>
