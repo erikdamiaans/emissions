@@ -20,7 +20,7 @@ import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+public class  WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 
     @Autowired
@@ -61,12 +61,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
     }
-
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
                 .csrf().disable()
-                .authorizeRequests().antMatchers("/emissions/login").permitAll()
+                .authorizeRequests().antMatchers("/emissions/login","/actuator/health").permitAll()
                 .anyRequest().authenticated()
                 .and()
               .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint())
