@@ -1,6 +1,7 @@
 package github.eked.emission.controller;
 
 import github.eked.emission.bean.AverageEmission;
+import github.eked.emission.bean.Department;
 import github.eked.emission.service.EmissionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -39,5 +40,13 @@ public class EmissionController {
         List<AverageEmission> emissions = emissionService.getEmissions(department, sourceType);
         log.info("EmissionController returning {} items for {} and {} ",emissions.size(),department,sourceType);
         return emissions;
+    }
+
+    @GetMapping(path = "/departments", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<Department> getDepartments() {
+        log.info("getDepartments " );
+        List<Department> departments = emissionService.getDepartments();
+        log.info("EmissionController getDepartments returning {} items  ",departments.size());
+        return departments;
     }
 }

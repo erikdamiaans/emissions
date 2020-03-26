@@ -17,6 +17,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 
 public class EmissionServiceUnitTest {
+    public static final String WHERE_CLAUSE = "emissions_mtco2e!=0.0";
     private static String DEPARTMENT = "dep1";
     private static String SOURCE = "s1";
     private static String SOURCE_2 = "s2";
@@ -45,7 +46,7 @@ public class EmissionServiceUnitTest {
     @Test
     public void averageSameSourceTypes() {
 
-        when(sfGovClient.getEmissions(DEPARTMENT, SOURCE))
+        when(sfGovClient.getEmissions(WHERE_CLAUSE,DEPARTMENT, SOURCE))
                 .thenReturn(SAME_DEPARTMENT_AND_SOURCETYPE);
 
         List<AverageEmission> emissions = emissionService.getEmissions(DEPARTMENT, SOURCE);
@@ -59,7 +60,7 @@ public class EmissionServiceUnitTest {
     @Test
     public void averageDifferentSourceTypes() {
 
-        when(sfGovClient.getEmissions(DEPARTMENT, null))
+        when(sfGovClient.getEmissions(WHERE_CLAUSE,DEPARTMENT, null))
                 .thenReturn(SAME_DEPARTMENT_DIFFERENT_SOURCETYPES);
 
         List<AverageEmission> emissions = emissionService.getEmissions(DEPARTMENT, null);

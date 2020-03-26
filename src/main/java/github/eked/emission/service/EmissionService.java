@@ -1,6 +1,7 @@
 package github.eked.emission.service;
 
 import github.eked.emission.bean.AverageEmission;
+import github.eked.emission.bean.Department;
 import github.eked.emission.bean.Emission;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -33,6 +34,16 @@ public class EmissionService {
         this.sfGovClient = sfGovClient;
     }
 
+    @Cacheable(value = "departments", unless = "#result==null or #result.isEmpty()")
+    public List<Department> getDepartments() {
+        ResponseEntity<List<Department>> responseEntity = sfGovClient.getDepartments();
+        log.info("getDepartments status code " + responseEntity.getStatusCode());
+        if (responseEntity.getStatusCode() != HttpStatus.OK || responseEntity.getBody() == null) {
+            return Collections.emptyList();//don't change this, is referenced in the unless condition of the @Cacheable
+        }
+        return responseEntity.getBody();
+    }
+
     @AllArgsConstructor
     @Getter
     @EqualsAndHashCode
@@ -40,33 +51,17 @@ public class EmissionService {
         private String department;
         private String sourceType;
     }
-  /*  @Cacheable(value = "emissionsDepartmentSourceType", unless = "#result==null or #result.isEmpty()")
-    public List<DepartmentEmission> getEmissions(String department, String sourceType) {
-        ResponseEntity<List<Emission>> requestEntity = sfGovClient.getEmissions(department, sourceType);
-        log.info(" status code " + requestEntity.getStatusCode());
-        if (requestEntity.getStatusCode() != HttpStatus.OK || requestEntity.getBody() == null) {
-            return Collections.emptyList();//don't change this, is referenced in the unless condition of the @Cacheable
-        }
 
-        return requestEntity.getBody()
-                .stream()
-                .collect(groupingBy(Emission::getDepartment,
-                        averagingDouble(Emission::getCo2EmissionDouble)))
-                .entrySet()
-                .stream()
-                .map(e -> new DepartmentEmission(e.getKey(), e.getValue()))
-                .collect(Collectors.toList());
-    }*/
 
     @Cacheable(value = "emissionsDepartmentSourceType", unless = "#result==null or #result.isEmpty()")
     public List<AverageEmission> getEmissions(String department, String sourceType) {
-        ResponseEntity<List<Emission>> requestEntity = sfGovClient.getEmissions(department, sourceType);
-        log.info(" status code " + requestEntity.getStatusCode());
-        if (requestEntity.getStatusCode() != HttpStatus.OK || requestEntity.getBody() == null) {
+        ResponseEntity<List<Emission>> responseEntity = sfGovClient.getEmissions("emissions_mtco2e!=0.0",department, sourceType);
+        log.info("getEmissions status code " + responseEntity.getStatusCode());
+        if (responseEntity.getStatusCode() != HttpStatus.OK || responseEntity.getBody() == null) {
             return Collections.emptyList();//don't change this, is referenced in the unless condition of the @Cacheable
         }
 
-        return requestEntity.getBody()
+        return responseEntity.getBody()
                 .stream()
                 .collect(groupingBy(e -> new CompositeKey(e.getDepartment(), e.getSource()),
                         averagingDouble(Emission::getCo2EmissionDouble)))

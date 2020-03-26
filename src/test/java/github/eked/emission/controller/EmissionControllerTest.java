@@ -1,6 +1,7 @@
 package github.eked.emission.controller;
 
 import github.eked.emission.bean.AverageEmission;
+import github.eked.emission.bean.Department;
 import github.eked.emission.repo.ApplicationUserRepoImpl;
 import github.eked.emission.service.EmissionService;
 import github.eked.emission.service.TokenService;
@@ -35,6 +36,17 @@ public class EmissionControllerTest {
     private MockMvc mockMvc;
     @MockBean
     private EmissionService emissionService;
+
+    @Test
+    @WithMockUser(username = "ester", roles = {"ADMIN"})
+    public void departmentsAuthenticated() throws Exception {
+        List<Department> departments = Arrays.asList(new Department("police"), new Department("fire brigade"));
+        given(emissionService.getDepartments()).willReturn(departments);
+        this.mockMvc.perform(get("/emissions/departments"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(content().json("[{'department': police},{'department': 'fire brigade'}]"));
+    }
 
     @Test
     @WithMockUser(username = "ester", roles = {"ADMIN"})
