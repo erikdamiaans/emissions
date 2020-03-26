@@ -80,6 +80,6 @@ jobs:
       uses: aws-actions/amazon-ecs-deploy-task-definition@v1
       with:
         task-definition: ${{ steps.task-def.outputs.task-definition }}
-        service: service-with-loadb
-        cluster: default
+        service: emission-2-service
+        cluster: emission-cluster
         wait-for-service-stability: false
