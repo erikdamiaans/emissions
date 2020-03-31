@@ -1,5 +1,6 @@
-package github.eked.emission.security;
+package github.eked.emission.config;
 
+import github.eked.emission.security.JwtRequestFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,7 +23,17 @@ import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class  WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-
+    private static final String[] AUTH_WHITELIST = {
+            "/emissions/login",
+            "/actuator/health",
+            "/",
+            "index.html",
+            // -- swagger ui
+            "/swagger-resources/**",
+            "/swagger-ui.html",
+            "/v2/api-docs",
+            "/webjars/**"
+    };
     @Autowired
     private UserDetailsService userDetailsServiceImpl;
 
@@ -65,7 +76,7 @@ public class  WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
                 .csrf().disable()
-                .authorizeRequests().antMatchers("/emissions/login","/actuator/health").permitAll()
+                .authorizeRequests().antMatchers(AUTH_WHITELIST).permitAll()
                 .anyRequest().authenticated()
                 .and()
               .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint())

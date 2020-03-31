@@ -26,7 +26,6 @@ public class Emission {
 
     @JsonGetter(value = "source_type")
     public String getSource() {
-      //  log.info("getSource {} ", source);
         return source;
     }
 

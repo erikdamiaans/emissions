@@ -2,6 +2,7 @@ package github.eked.emission.service;
 
 import github.eked.emission.bean.AverageEmission;
 import github.eked.emission.bean.Department;
+import github.eked.emission.bean.SourceType;
 import github.eked.emission.bean.Emission;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -44,6 +45,16 @@ public class EmissionService {
         return responseEntity.getBody();
     }
 
+    @Cacheable(value = "sourceTypes", unless = "#result==null or #result.isEmpty()")
+    public List<SourceType> getSourceTypesForDepartment(String department) {
+        ResponseEntity<List<SourceType>> responseEntity = sfGovClient.getSourceTypes(department);
+        log.info("getDepartments status code " + responseEntity.getStatusCode());
+        if (responseEntity.getStatusCode() != HttpStatus.OK || responseEntity.getBody() == null) {
+            return Collections.emptyList();//don't change this, is referenced in the unless condition of the @Cacheable
+        }
+        return responseEntity.getBody();
+    }
+
     @AllArgsConstructor
     @Getter
     @EqualsAndHashCode
@@ -55,7 +66,7 @@ public class EmissionService {
 
     @Cacheable(value = "emissionsDepartmentSourceType", unless = "#result==null or #result.isEmpty()")
     public List<AverageEmission> getEmissions(String department, String sourceType) {
-        ResponseEntity<List<Emission>> responseEntity = sfGovClient.getEmissions("emissions_mtco2e!=0.0",department, sourceType);
+        ResponseEntity<List<Emission>> responseEntity = sfGovClient.getEmissions("emissions_mtco2e!=0.0", department, sourceType);
         log.info("getEmissions status code " + responseEntity.getStatusCode());
         if (responseEntity.getStatusCode() != HttpStatus.OK || responseEntity.getBody() == null) {
             return Collections.emptyList();//don't change this, is referenced in the unless condition of the @Cacheable
@@ -66,13 +77,13 @@ public class EmissionService {
                 .collect(groupingBy(e -> new CompositeKey(e.getDepartment(), e.getSource()),
                         averagingDouble(Emission::getCo2EmissionDouble)))
                 .entrySet().stream()
-                .map(e -> new AverageEmission(e.getKey().department, e.getKey().sourceType, roundthis(e.getValue(),2)))
+                .map(e -> new AverageEmission(e.getKey().department, e.getKey().sourceType, roundthis(e.getValue(), 2)))
                 .collect(Collectors.toList());
 
     }
 
-    private double roundthis(double value,int places){
-            double scale = Math.pow(10, places);
-            return Math.round(value * scale) / scale;
+    private double roundthis(double value, int places) {
+        double scale = Math.pow(10, places);
+        return Math.round(value * scale) / scale;
     }
 }

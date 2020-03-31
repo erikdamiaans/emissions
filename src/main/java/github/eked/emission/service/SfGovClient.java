@@ -1,6 +1,7 @@
 package github.eked.emission.service;
 
 import github.eked.emission.bean.Department;
+import github.eked.emission.bean.SourceType;
 import github.eked.emission.bean.Emission;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -47,7 +48,21 @@ public class SfGovClient {
         return new RestTemplate().exchange(urlDepartments(), HttpMethod.GET, null, new ParameterizedTypeReference<>() {
         });
     }
+    public ResponseEntity<List<SourceType>> getSourceTypes(String department) {
+        return new RestTemplate().exchange(urlSourceTypes(department), HttpMethod.GET, null, new ParameterizedTypeReference<>() {
+        });
+    }
 
+    private String urlSourceTypes(String department) {
+        String uri = UriComponentsBuilder.fromHttpUrl(this.baseUrl)
+                .queryParam("$select", "distinct department, source_type")
+                .queryParam("department",  department)
+                .queryParam("$order", "source_type")
+                .build()
+                .toUriString();
+        log.info("urlSourceTypes {} ", uri);
+        return uri;
+    }
     private String urlDepartments() {
         String uri = UriComponentsBuilder.fromHttpUrl(this.baseUrl)
                 .queryParam("$select", "distinct department")
